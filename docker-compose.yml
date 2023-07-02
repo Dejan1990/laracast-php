@@ -1,0 +1,28 @@
+version: '3.9'
+services:
+  php-env:
+    depends_on:
+      - db
+    build: .
+    volumes:
+      - "./:/var/www/html"
+    ports:
+      - 80:80
+  db: 
+    image: mysql:latest
+    environment:
+      - MYSQL_DATABASE=laracasts_php
+      - MYSQL_USER=laracast
+      - MYSQL_PASSWORD=password # this should live in a env var
+      - MYSQL_ALLOW_EMPTY_PASSWORD=1 # equivalent to True
+    volumes:
+      - "./db:/docker-entrypoint-initdb.d" # this is how we persist a sql db even when container stops
+  phpmyadmin:
+    depends_on:
+      - db
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - 8001:80
+    environment:
+      - PMA_HOST=db
+      - PMA_PORT=3306
